@@ -68,57 +68,71 @@ WSL Ubuntu 子系统
 
 ## 🚀 完整安装流程（照着做就行）
 
-### 第一步：安装 WSL 和 Ubuntu
-
-**如果已经有 WSL + Ubuntu 系统，跳过此步。**
-
-在 Windows 的 **PowerShell（以管理员身份运行）** 中执行：
-
+**前置步骤**：先安装 WSL + Ubuntu（如果还没装），在 Windows PowerShell 以管理员身份运行：
 ```powershell
 wsl --install -d Ubuntu
 ```
-
-> 📖 如果命令报错，参考 [微软官方 WSL 安装教程](https://learn.microsoft.com/zh-cn/windows/wsl/install)
-
-安装后 **重启电脑**，然后启动 Ubuntu，按提示设置用户名和密码（这是 Linux 的用户名，跟 Windows 用户名没关系）。
+> 重启后打开 Ubuntu，设置 Linux 用户名密码。详见 [WSL 官方安装指南](https://learn.microsoft.com/zh-cn/windows/wsl/install)
 
 ---
 
-### 第二步：进入 Ubuntu，克隆仓库
+### 准备好了？选一种方式开始安装
 
-在 **WSL Ubuntu 终端** 中逐行执行：
+在 WSL Ubuntu 终端中执行：
+
+<details>
+<summary><b>⭐ 方案 A：一条命令搞定（推荐）</b></summary>
+
+无需克隆仓库，一条命令直接下载并运行安装脚本：
 
 ```bash
-# 先更新系统包（这一步很重要，保证 apt 源可用）
-sudo apt update && sudo apt upgrade -y
+bash <(curl -fsSL https://raw.githubusercontent.com/The-scent/claude-code-wsl-bridge/main/scripts/setup.sh)
+```
 
-# 如果提示 git 未安装，先装 git
-sudo apt install -y git
+> 如果网络慢，用国内镜像：
+> ```bash
+> bash <(curl -fsSL https://ghproxy.net/https://raw.githubusercontent.com/The-scent/claude-code-wsl-bridge/main/scripts/setup.sh)
+> ```
 
-# 克隆仓库（如果有网络问题，参考下面的「网络问题」）
+安装完成后跳到 **第四步** 配置供应商。
+
+</details>
+
+<details>
+<summary><b>方案 B：先克隆再安装</b></summary>
+
+```bash
+cd ~ && git clone https://github.com/The-scent/claude-code-wsl-bridge.git && cd claude-code-wsl-bridge && chmod +x scripts/setup.sh && ./scripts/setup.sh
+```
+
+或者分步执行：
+```bash
 cd ~
 git clone https://github.com/The-scent/claude-code-wsl-bridge.git
 cd claude-code-wsl-bridge
-```
-
-**⚠️ 网络问题怎么办？**
-如果 `git clone` 很慢或失败，用国内镜像：
-
-```bash
-git clone https://ghproxy.net/https://github.com/The-scent/claude-code-wsl-bridge.git
-# 或者用 gitee 镜像（如果有的话）
-```
-
----
-
-### 第三步：一键安装
-
-继续在 Ubuntu 终端中执行：
-
-```bash
 chmod +x scripts/setup.sh
 ./scripts/setup.sh
 ```
+
+网络慢用国内加速：
+```bash
+git clone https://ghproxy.net/https://github.com/The-scent/claude-code-wsl-bridge.git
+```
+</details>
+
+脚本自动完成：
+1. ✅ 检查网络连通性
+2. ✅ 安装 Node.js 22+（如果没装）
+3. ✅ 安装 git、curl 等系统工具
+4. ✅ 全局安装 `@anthropic-ai/claude-code`（Claude Code CLI）
+5. ✅ 安装 **NervHub**（协议桥接层）
+6. ✅ 创建 `.env` 配置文件
+7. ✅ 配置 Claude Code 代理指向 `127.0.0.1:11500`
+8. ✅ 添加环境变量到 `~/.bashrc`
+
+> 💡 卡住了？常见原因及解决：
+> - 网络问题：`export HTTP_PROXY=http://127.0.0.1:7890 && export HTTPS_PROXY=http://127.0.0.1:7890` 再重试
+> - 提示 `command not found`：先装 `sudo apt install -y curl`
 
 脚本会自动完成：
 
